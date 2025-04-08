@@ -1,4 +1,5 @@
-import 'package:bloc_cubit/controllers/cubit/counter_cubit.dart';
+import 'package:bloc_cubit/controllers/bloc//counter_bloc.dart';
+import 'package:bloc_cubit/controllers/bloc/counter_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,7 +13,7 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     
     return BlocProvider(
-      create: (context) => CounterCubit(),
+      create: (context) => CounterBloc(),
         
       child: Scaffold(
             appBar: AppBar(
@@ -23,7 +24,7 @@ class MyHomePage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  BlocBuilder<CounterCubit, CounterState>(
+                  BlocBuilder<CounterBloc, CounterState>(
                     builder: (context, state){
                       return Text(
                       state.count.toString(),
@@ -35,20 +36,20 @@ class MyHomePage extends StatelessWidget {
                 ],
               ),
             ),
-            floatingActionButton: BlocBuilder<CounterCubit, CounterState>(
+          floatingActionButton: BlocBuilder<CounterBloc, CounterState>(
               builder: (context, state) {
                 return Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                children: [
                 FloatingActionButton(onPressed: ((){
-                  context.read<CounterCubit>().increment();
+                  context.read<CounterBloc>().add(IncrementEvent());
                 }),
                 tooltip: 'Increment',
                  child: Icon(Icons.add),
                 ),
                 SizedBox(height: 4,),
                 FloatingActionButton(onPressed: (){
-                  context.read<CounterCubit>().decrement();
+                  context.read<CounterBloc>().add(DecrementEvent());
                 },
                 tooltip: 'Decrement',
                  child: Icon(Icons.remove
