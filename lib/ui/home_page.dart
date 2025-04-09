@@ -1,66 +1,67 @@
-import 'package:bloc_cubit/controllers/bloc//counter_bloc.dart';
-import 'package:bloc_cubit/controllers/bloc/counter_event.dart';
+import 'package:bloc_cubit/controllers/tasks_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MyHomePage extends StatelessWidget {
-  
   final String title;
 
-  const MyHomePage({super.key, required this.title});
-  
+  final TextEditingController textEditingController = TextEditingController();
+
+  MyHomePage({super.key, required this.title});
+
   @override
   Widget build(BuildContext context) {
-    
-    return BlocProvider(
-      create: (context) => CounterBloc(),
-        
-      child: Scaffold(
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              title: Text(title),
-            ),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  BlocBuilder<CounterBloc, CounterState>(
-                    builder: (context, state){
-                      return Text(
-                      state.count.toString(),
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    );
-                    }
-                  ),
-                  const Text('You have pushed the button this many times:'),
-                ],
-              ),
-            ),
-          floatingActionButton: BlocBuilder<CounterBloc, CounterState>(
-              builder: (context, state) {
-                return Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-               children: [
-                FloatingActionButton(onPressed: ((){
-                  context.read<CounterBloc>().add(IncrementEvent());
-                }),
-                tooltip: 'Increment',
-                 child: Icon(Icons.add),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(title),
+      ),
+      body: BlocProvider(
+        create: (context) => TasksCubit(),
+        child: BlocBuilder<TasksCubit, TasksState>(
+          builder: (context, state) {
+            final controller = context.read<TasksCubit>();
+            return Column(
+              children: [
+                TextField(
+                  controller: textEditingController,
+                  decoration: InputDecoration(hintText: 'Add Your Task'),
                 ),
-                SizedBox(height: 4,),
-                FloatingActionButton(onPressed: (){
-                  context.read<CounterBloc>().add(DecrementEvent());
-                },
-                tooltip: 'Decrement',
-                 child: Icon(Icons.remove
-                ),)
-               ],
-               
-                        );
-              },
-              
-            )
-          ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (textEditingController.text.isEmpty) return;
+                    controller.addTask(textEditingController.text);
+                    textEditingController.clear();
+                  },
+                  child: Text('Add'),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: state.tasks.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ListTile(
+                        title: Text(state.tasks[index].title),
+                        leading: Checkbox(
+                          value: state.tasks[index].isCompleted,
+                          onChanged: (value) {
+                            controller.toggleTask(state.tasks[index].id);
+                          },
+                        ),
+                        trailing: IconButton(
+                          onPressed: () {
+                            controller.removeTask(state.tasks[index].id);
+                          },
+                          icon: Icon(Icons.delete),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }
