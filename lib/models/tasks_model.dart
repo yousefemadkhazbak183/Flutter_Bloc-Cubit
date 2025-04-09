@@ -12,7 +12,6 @@ class TasksModel extends Equatable {
   });
 
   @override
-  // TODO: implement props
   List<Object?> get props => [id, title, isCompleted];
 
   TasksModel copyWith({String? id, String? title, bool? isCompleted}) {
