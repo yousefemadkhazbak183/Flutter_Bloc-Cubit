@@ -1,4 +1,5 @@
-import 'package:bloc_cubit/controllers/tasks_cubit.dart';
+import 'package:bloc_cubit/controllers/tasks_bloc.dart';
+import 'package:bloc_cubit/controllers/tasks_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,10 +18,10 @@ class MyHomePage extends StatelessWidget {
         title: Text(title),
       ),
       body: BlocProvider(
-        create: (context) => TasksCubit(),
-        child: BlocBuilder<TasksCubit, TasksState>(
+        create: (context) => TasksBloc(),
+        child: BlocBuilder<TasksBloc, TasksState>(
           builder: (context, state) {
-            final controller = context.read<TasksCubit>();
+            final controller = context.read<TasksBloc>();
             return Column(
               children: [
                 TextField(
@@ -30,8 +31,8 @@ class MyHomePage extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     if (textEditingController.text.isEmpty) return;
-                    controller.addTask(textEditingController.text);
-                    textEditingController.clear();
+                    controller.add(AddTaskEvent(textEditingController.text));
+                    // textEditingController.clear();
                   },
                   child: Text('Add'),
                 ),
@@ -44,12 +45,16 @@ class MyHomePage extends StatelessWidget {
                         leading: Checkbox(
                           value: state.tasks[index].isCompleted,
                           onChanged: (value) {
-                            controller.toggleTask(state.tasks[index].id);
+                            controller.add(
+                              ToggleTaskEvent(state.tasks[index].id),
+                            );
                           },
                         ),
                         trailing: IconButton(
                           onPressed: () {
-                            controller.removeTask(state.tasks[index].id);
+                            controller.add(
+                              RemoveTaskEvent(state.tasks[index].id),
+                            );
                           },
                           icon: Icon(Icons.delete),
                         ),

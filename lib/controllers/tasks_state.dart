@@ -1,4 +1,4 @@
-part of 'tasks_cubit.dart';
+part of 'tasks_bloc.dart';
 
 @immutable
 sealed class TasksState extends Equatable {
